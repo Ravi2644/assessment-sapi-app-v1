@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+       <http:listener-config name="api-raml-httpListenerConfig">
+        <http:listener-connection host="$.{http.host}" port="${http.port}" />
+    </http:listener-config>
+    <apikit:config name="api-raml-config" api="api-raml.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<configuration-properties doc:name="Configuration properties" doc:id="c5e1fd1b-f4d6-4706-bb3d-a83d1a624128" file="properties/env/${mule.env}.yaml" />
+	<flow name="api-raml-main">
+        <http:listener config-ref="api-raml-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="api-raml-config" />
+		<error-handler ref="global-apikit-errorError_Handler" />
+    </flow>
+    <flow name="api-raml-console">
+        <http:listener config-ref="api-raml-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="api-raml-config" />
+		<error-handler ref="global-apikit-errorError_Handler" />
+    </flow>
+    <flow name="get:\assessments:api-raml-config">
+        <ee:transform doc:name="Transform Message" doc:id="9022617c-e654-4aa5-8687-35c7be39a693" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="requestMessage" ><![CDATA[message]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  retrieveAssessmnetResponce: [
+    {
+      question: "What Is an Investment Objective",
+      answer: [
+        {
+          option: "Option1"
+        }, 
+        {
+          option: "Option1"
+        }, 
+        {
+          option: "Option1"
+        }, 
+        {
+          option: "Option1"
+        }
+      ]
+    }
+  ]
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<error-handler ref="global-app-errorError_Handler1" />
+    </flow>
+    <flow name="post:\assessments:application\json:api-raml-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  recordAssessmentResponse: {
+    eventInstanceId: "dsfhdbf-hsbdfhjs-b3784t2-wfsd",
+    status: "success"
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<error-handler ref="global-app-errorError_Handler1" />
+    </flow>
+</mule>

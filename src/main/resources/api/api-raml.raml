@@ -1,0 +1,42 @@
+#%RAML 1.0
+title: assessment-sapi-raml1
+version: v1
+protocols:
+  - HTTP
+  - HTTPS
+traits:
+  commonheader: !include /exchange_modules/46c108d7-2afd-4e30-96a1-1cbc4c80e667/common-fragment/1.0.29/traits/header.trait.raml
+  commonrespone: !include /exchange_modules/46c108d7-2afd-4e30-96a1-1cbc4c80e667/common-fragment/1.0.29/traits/commonresponetrait.raml
+types:
+  get201datatype: !include /exchange_modules/46c108d7-2afd-4e30-96a1-1cbc4c80e667/common-fragment/1.0.29/datatyes/get201dataType.raml
+  postbodydatatype: !include /exchange_modules/46c108d7-2afd-4e30-96a1-1cbc4c80e667/common-fragment/1.0.29/datatyes/postbodydataType.raml
+  postrespone:  !include /exchange_modules/46c108d7-2afd-4e30-96a1-1cbc4c80e667/common-fragment/1.0.29/datatyes/postresponedataType.raml
+
+
+description: this api is used for assessment sapi raml
+/assessments:
+  description: the Resource Details used for assessment to check fund eligiblity and submit fund  eligiblity assessment
+  get:
+    is:
+      - commonheader
+      - commonrespone
+    responses:
+      200:
+        body:
+          application/json:
+            type: get201datatype
+            example: !include /example/get200examplefile.json                    
+  post:
+    is:
+      - commonheader
+      - commonrespone
+    body:
+      application/json:
+        type: postbodydatatype
+        example: !include /example/postbodyexamplefile.json
+    responses:
+      201:
+        body:
+          application/json:
+                type:  postrespone
+                example: !include /example/postsucessexampleresponefile.json
