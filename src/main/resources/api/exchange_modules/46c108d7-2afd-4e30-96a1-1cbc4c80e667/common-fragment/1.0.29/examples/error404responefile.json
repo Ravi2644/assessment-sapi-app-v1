@@ -1,0 +1,10 @@
+ {
+            "msg": "failed operation",
+            "code": 404,
+            "eventId": "dbfhjsdbhfbdo8ryt876t75ty",
+            "error": {
+              "type": "bad error",
+              "title": "bad error",
+              "detials": "The Request is not Authorized"
+            }
+          }
